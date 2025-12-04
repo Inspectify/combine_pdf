@@ -81,8 +81,9 @@ module CombinePDF
       # puts @parsed
 
       unless (@parsed.select { |i| !i.is_a?(Hash) }).empty?
-        # p @parsed.select
-        raise ParsingError, 'Unknown PDF parsing error - malformed PDF file?'
+        # # p @parsed.select
+        # raise ParsingError, 'Unknown PDF parsing error - malformed PDF file?'
+        return @parsed
       end
 
       if @root_object == {}.freeze
@@ -364,7 +365,7 @@ module CombinePDF
           if(out.last.is_a?(Hash) && out.last[:Length].is_a?(Integer) && out.last[:Length])
             @scanner.pos += out.last[:Length]
             unless(@scanner.skip(/\r?\n?endstream/))
-              @scanner.pos = old_pos 
+              @scanner.pos = old_pos
               # raise error if the stream doesn't end.
               unless @scanner.skip_until(/endstream/)
                 raise ParsingError, "Parsing Error: PDF file error - a stream object wasn't properly closed using 'endstream'!"
@@ -379,8 +380,8 @@ module CombinePDF
 
           length = @scanner.pos - (old_pos + 9)
           length = 0 if(length < 0)
-          length -= 1 if(@scanner.string[old_pos + length - 1] == "\n") 
-          length -= 1 if(@scanner.string[old_pos + length - 1] == "\r") 
+          length -= 1 if(@scanner.string[old_pos + length - 1] == "\n")
+          length -= 1 if(@scanner.string[old_pos + length - 1] == "\r")
           str = (length > 0) ? @scanner.string.slice(old_pos, length) : +''
 
           # warn "CombinePDF parser: detected Stream #{str.length} bytes long #{str[0..3]}...#{str[-4..-1]}"
